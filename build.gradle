@@ -1,0 +1,182 @@
+defaultTasks 'clean', 'test', 'aggregate'
+
+// Muestra la versión de Gradle al inicio de la compilación
+println "------------------------------------------------------------"
+println "Compilando con Gradle versión: ${GradleVersion.current().version}"
+println "Java detectado por Gradle: ${System.getProperty('java.version')}"
+println "------------------------------------------------------------"
+
+configurations.all {
+    //Sikulix
+    //exclude group: 'com.tigervnc', module: 'tigervnc'
+    exclude group: 'com.sikulix', module: 'sikulix2tigervnc'
+    //log4j
+    exclude group: "log4j", module: "log4j"
+    //gradle plugin
+    //exclude group: "net.serenity-bdd", module: "serenity-gradle-plugin" //Necesario para compilar
+    exclude group: "org.gradle", module: "gradle"
+    exclude group: "net.serenity-bdd", module: "serenity"
+
+
+    //selenium-chromium-driver-4.38.0
+    //exclude group: "chromium", module: "chromium"
+    //exclude group: "chromium_project", module: "chromium"
+    //exclude group: "selenium", module: "selenium"
+    //exclude group: "org.seleniumhq.selenium", module: "selenium-chromium-driver" //Necesario para compilar
+
+    //itext
+    exclude group: "com.lowagie", module: "itext"
+    //xmlgraphics
+    exclude group: "org.apache.xmlgraphics", module: "xmlgraphics-commons"
+    //netty-transport
+    exclude group: "io.netty", module: "netty"
+    //pip
+    exclude group: "org.python", module: "jython-slim"
+    //setuptools
+    exclude group: "python", module: "setuptools"
+    //lept4j
+    exclude group: "net.sourceforge.lept4j", module: "lept4j"
+    //ant-1.9.7.jar
+    exclude group: "org.apache.ant", module: "ant"
+    //angus-activation-2.0.1.jar
+    exclude group: "org.eclipse.angus", module: "angus-activation"
+    //bcprov-jdk15on-1.62
+    exclude group: "bouncycastle", module: "bouncy_castle_for_java"
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcpkix-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcpg-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcmail-jdk15on"
+    exclude group: "org.bouncycastle", module: "bcutil-jdk15on"
+    //JLine 2.14.5
+    exclude group: "jline", module: "jline"
+    //Apache PDFBox 2.0.21
+    exclude group: "org.apache.pdfbox", module: "pdfbox-tools"
+    exclude group: "org.apache.pdfbox", module: "pdfbox"
+    //Bootstrap 3.4.1 (JavaScript)
+    exclude group: "net.serenity-bdd", module: "serenity-report-resources" //No se recomienda excluir
+    //Apache PDFBox 2.0.21
+    exclude group: "org.apache.pdfbox", module: "pdfbox-tools"
+    exclude group: "org.apache.pdfbox", module: "pdfbox"
+    // Excluir Bootstrap 3.4.1 (JavaScript)
+    exclude group: "org.webjars", module: "bootstrap"
+    //serenity-junit-4.3.2
+    exclude group: "net.serenity-bdd", module: "serenity-junit"
+    //serenity-core-4.3.2 - NECESARIA
+    //exclude group: "net.serenity-bdd", module: "serenity-core"
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:4.3.2") {
+            //exclude group: "gradle", module: "gradle"
+            //exclude group: "serenity", module: "serenity"
+            //exclude group: "org.gradle", module: "gradle"
+            //exclude group: "net.serenity-bdd", module: "serenity"
+
+        }
+        classpath "net.serenity-bdd:serenity-single-page-report:4.2.30"
+        classpath "org.owasp:dependency-check-gradle:9.0.9"
+
+    }
+
+
+}
+
+
+
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+apply plugin: 'org.owasp.dependencycheck'
+//apply plugin: 'org-owasp.dependencycheck'
+//apply plugin: 'org.owasp.dependencycheck'
+//apply plugin: "org.owasp-dependencycheck"
+
+//sourceCompatibility = 16
+//targetCompatibility = 16
+
+ext {
+    serenity_version = '4.3.2'
+    junit_platform_launcher_version="1.13.0"
+    cucumber_junit_platform_engine_version="7.31.0"
+    junit_platform_suite_version="1.13.0"
+    junit_jupiter_engine_version="5.13.0"
+    junit_vintage_engine_version="5.13.0"
+    logback_classic_version="1.5.21"
+    assertj_core_version="3.27.6"
+}
+
+dependencies {
+    dependencies {
+        implementation "net.serenity-bdd:serenity-core:${serenity_version}" //Necesaria para compilar
+        implementation "net.serenity-bdd:serenity-cucumber:${serenity_version}" 
+        implementation "net.serenity-bdd:serenity-screenplay:${serenity_version}"
+        implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenity_version}"
+        implementation "net.serenity-bdd:serenity-ensure:${serenity_version}"
+        implementation("net.serenity-bdd:serenity-screenplay-rest:5.0.2") //para pruebas de api
+        testImplementation "org.junit.platform:junit-platform-launcher:${junit_platform_launcher_version}"
+        testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumber_junit_platform_engine_version}"
+        testImplementation "org.junit.platform:junit-platform-suite:${junit_platform_suite_version}"
+        testImplementation "org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_engine_version}"
+        testImplementation "org.junit.vintage:junit-vintage-engine:${junit_vintage_engine_version}"
+        implementation "ch.qos.logback:logback-classic:${logback_classic_version}"
+        testImplementation "org.assertj:assertj-core:${assertj_core_version}"
+        //Necesario para evitar el error java.lang.NoClassDefFoundError: com/sun/jna/platform/win32/Win32Exception
+        testImplementation "net.java.dev.jna:jna:5.13.0"
+        testImplementation "net.java.dev.jna:jna-platform:5.13.0"
+        //SikuliX
+        //implementation("com.sikulix:sikulix2tigervnc:1.1.4") {
+        //    exclude group: "com.tigervnc", module: "tigervnc"
+        //}
+        implementation("com.sikulix:sikulixapi:2.0.5") {
+        }
+
+        // iText moderno
+        //implementation("com.itextpdf:itext7-core:7.1.0")
+
+        // log4j-core solventa
+        implementation("org.apache.logging.log4j:log4j-core:2.25.2"){
+            //exclude group: "log4j", module: "log4j"
+        }
+
+        implementation("junit:junit:4.13.2")
+
+
+    }
+}
+
+dependencyCheck {
+    failBuildOnCVSS = 7       // Falla si hay vulnerabilidades críticas (CVSS >= 7)
+    suppressionFile = 'dependency-check-suppressions.xml'
+    analyzers {
+        assemblyEnabled = false
+    }
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate, reports)
